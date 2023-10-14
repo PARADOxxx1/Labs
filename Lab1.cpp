@@ -6,15 +6,59 @@ typedef long long ll;
 typedef long double ld;
 typedef string str;
 
-void InsertionSort(vector <str> &a){
-    ll ind = a.size() - 1;
-    str key = a[ind];
-    ll i = ind - 1;
-    while (i >= 0 && a[i] > key){
-        a[i + 1] = a[i];
-        i--;
+struct List{
+    str data;
+    List *next;
+
+    List() {
+        next = nullptr;
     }
-    a[i + 1] = key;
+
+    List(const string& s) {
+        data = s;
+        next = nullptr;
+    }
+};
+
+void Print(List *head) {
+	List *temp = head;
+	while (temp != NULL) {
+		cout << temp->data << " ";
+		temp = temp->next;
+	}
+	cout << endl;
+}
+
+List *add(List *p, str s)  {
+    if (!p) {
+        return new List(s);
+    }
+    List *q = p;
+    List *prev = p;
+    while (q) {
+        if ((q->data) < s) {
+            prev = q;
+            q = q->next;
+        }
+        else {
+            List *new_elem = new List(s);
+            if (q != p) {
+                new_elem->next = prev->next;
+                prev->next = new_elem;
+            }
+            else {
+                new_elem->next = p;
+                p = new_elem;
+            }
+            break;
+        }
+    }
+    if (!q) {
+        List *new_elem = new List(s);
+        new_elem->next = prev->next;
+        prev->next = new_elem;
+    }
+    return p;
 }
 
 int main()
@@ -22,33 +66,44 @@ int main()
     setlocale(LC_ALL, "rus");
     ifstream F;
     F.open("input1.txt", ios::in);
-    vector <str> s1, s2;
+    List *s1 = nullptr, *s2 = nullptr, *s3;
     str x;
     while (!F.eof()){
         F >> x;
-        s1.push_back(x);
-        InsertionSort(s1);
-    }
-    F.close();
-    F.open("input2.txt", ios::in);
-    while (!F.eof()){
-        F >> x;
-        s2.push_back(x);
-        InsertionSort(s2);
+        s1 = add(s1, x);
     }
     F.close();
     cout << "Упорядоченный список для файла input1.txt:\n";
-    for (ll i = 0; i < s1.size(); i++) cout << s1[i] << " ";
-    cout << endl << endl;
-    cout << "Упорядоченный список для файла input2.txt:\n";
-    for (ll i = 0; i < s2.size(); i++) cout << s2[i] << " ";
-    cout << endl << endl;
-    vector <str> s = s1;
-    for (ll i = 0; i < s2.size(); i++){
-        s.push_back(s2[i]);
-        InsertionSort(s);
-    }
-    cout << "Единый упорядоченный список:\n";
-    for (ll i = 0; i < s.size(); i++) cout << s[i] << " ";
+    Print(s1);
     cout << endl;
+    List *s = s1;
+    F.open("input2.txt", ios::in);
+    while (!F.eof()){
+        F >> x;
+        s2 = add(s2, x);
+        s = add(s, x);
+    }
+    F.close();
+    cout << "Упорядоченный список для файла input2.txt:\n";
+    Print(s2);
+    cout << endl;
+    cout << "Единый упорядоченный список:\n";
+    Print(s);
+
+    //Очистка памяти
+    while (s1) {
+        s3 = s1->next;
+        delete s1;
+        s1 = s3;
+    }
+    while (s2) {
+        s3 = s2->next;
+        delete s2;
+        s2 = s3;
+    }
+    while (s) {
+        s3 = s->next;
+        delete s;
+        s = s3;
+    }
 }
