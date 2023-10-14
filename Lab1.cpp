@@ -14,7 +14,7 @@ struct List{
         next = nullptr;
     }
 
-    List(const string& s) {
+    List(const string &s) {
         data = s;
         next = nullptr;
     }
